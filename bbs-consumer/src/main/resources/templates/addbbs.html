@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发帖</title>
+</head>
+<body>
+   <div id="bodys" align="center">
+        <div id="exhibition" align="center" >
+            <form id="addBBs">
+             <table id="add" width="50%" border="2px" >
+                  <tr>
+                      <th colspan="2"><h1>发布新帖</h1></th>
+                  </tr>
+                  <tr>
+                      <td>发布版区</td>
+                      <td>
+                          <select name="sortId" id="sortId">
+                          </select>
+                      </td>
+                  </tr>
+                 <tr>
+                     <td>作者</td>
+                     <td>
+                         <input name="author" id="author" type="text">
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>标题</td>
+                     <td>
+                         <input name="title" id="title" type="text">
+                     </td>
+                 </tr>
+                 <tr>
+                     <td>详细内容</td>
+                     <td>
+                         <textarea name="detail" id="detail">
+                         </textarea>
+                     </td>
+                 </tr>
+                 <th colspan="2">
+                         <input type="button" value="提交" id="send" style="margin-right: 30px;">
+                         <input type="button" value="返回" id="replace">
+                 </th>
+              </table>
+            </form>
+        </div>
+   </div>
+</body>
+<script type="text/javascript" src="" th:src="@{/webjars/jquery/1.12.4/jquery.js}"></script>
+<script>
+
+    //加载完页面
+    $(function () {
+        showSortList();
+        $("#author").blur(checkAuthor);
+        $("#title").blur(checkTitle);
+        $("#detail").blur(checkDetail);
+
+        $("#send").click(function () {
+            var rs1 = checkAuthor();
+            var rs2 = checkTitle();
+            var rs3 = checkDetail();
+            if(rs1&&rs2&&rs3){
+                $.ajax({type:"PUT",
+                    url:"[[@{/adds}]]",
+                    data:$("#addBBs").serialize(),
+                    dataType:"json",
+                    success:function(data){
+                            window.location.href="[[@{/}]]?success="+data;
+                    },
+                    error:function(){
+                        alert(data.responseText);
+                        alert("程序错误");
+                    }
+                })
+            }
+        })
+
+    })
+
+    function checkAuthor(){
+        var BbsAuthor = $("#author").val();
+        if(BbsAuthor==''){
+            alert("不能为空！");
+            return false;
+        }
+        return true;
+    }
+
+    function checkTitle(){
+        var ok = true;
+        var BbsTitle = $("#title").val();
+            //判断
+            $.ajax({async:false,
+                type:"POST",
+                url:"[[@{/exists}]]",
+                data:{title:BbsTitle},
+                dataType:"json",
+                success:function(data){
+                alert(data)
+                    if(data){
+                        alert("标题已存在");
+                        ok = false;
+                    }else{
+                        alert("标题可以使用");
+
+                    }
+                },
+                error:function(){
+                    alert("程序错误");
+                    alert(data.responseText);
+                }
+            })
+        alert(ok)
+        return ok;
+    }
+
+    function checkDetail(){
+        var BbsDetail = $("#detail").val();
+        if(BbsDetail==''){
+            alert("不能为空！");
+            return false;
+        }
+        return true;
+    }
+
+    //查询发帖类别结果
+    function showSortList() {
+        //用ajax获取结果
+        $.ajax({type:"get",
+            url:"[[@{/list}]]",
+            dataType:"json",
+            success:function(data){
+                if(data !=null && data.length>0){
+                    var optionObj = "";
+                    for(var i=0;i<data.length;i++){
+                        optionObj += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+                    }
+                    $("#sortId").empty();
+                    //拼接
+                    $("#sortId").append(optionObj);
+                }
+            },
+            error:function(){
+                alert("程序错误")
+                alert(data.responseText)
+            }
+        })
+    }
+
+    $("#replace").click(function(){
+        window.location.href="/bbs/";
+    })
+
+</script>
+</html>

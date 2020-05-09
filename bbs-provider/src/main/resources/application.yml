@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /bbs
+logging:
+  level:
+    cn.kgc: debug
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.0.110:3306/bbsdb
+    username: root
+    password: 123456
+dubbo:
+  application:
+    name: bbs-provider
+  registry:
+    address: zookeeper://192.168.0.110:2181
+  protocol:
+    name: dubbo
+    port: 20881
+  scan:
+    base-packages: cn.kgc.service.impl

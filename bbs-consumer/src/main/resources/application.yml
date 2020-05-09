@@ -1,0 +1,19 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /bbs
+logging:
+  level:
+    cn.kgc: debug
+spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  thymeleaf:
+    cache: false
+dubbo:
+  application:
+    name: bbs_consumer
+  registry:
+    address: zookeeper://192.168.0.110:2181

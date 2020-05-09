@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>开发者论坛</title>
+    <link th:href="@{/css/bbscss.css}" type="text/css" rel="stylesheet">
+</head>
+<body ng-app="myModle">
+     <div id="bodys" align="center" ng-controller="MyTable" ng-init="ShowComponent()">
+        <div ng-controller="MyOption" ng-init="ComboBox()">
+            <form id="bbsForm" method="get" >
+                讨论版区:<select name="sortId" id="sortId">
+                               <option ng-repeat="opobj in dates"  ng-value="opobj.id" >{{opobj.name}}</option>
+                         </select>
+                <input type="button" id="togoto" style="margin-left: 50px;" value="搜索" ng-click="ShowComponent()">
+            </form>
+        </div>
+         <div id="exhibition" style="border: 1px darkorange solid; width: 60%;" >
+             <div style="text-align: right" ><input type="button" id="ft" value="发帖"></div>
+                 <div >
+                         <table id="showList" width="100%" border="1">
+                            <tr id="firstTr" style="background-color: cyan">
+                               <th>帖子ID</th>
+                               <th>标题</th>
+                               <th>作者</th>
+                               <th>发布时间</th>
+                               <th>回复次数</th>
+                            </tr>
+                            <tr ng-repeat="tdobj in dates" ng-class="tdobj.id % 2 !=0?'bbsTr':''">
+                                <td align="center">{{tdobj.id}}</td>
+                                <td align="left">{{tdobj.title}}</td>
+                                <td align="left">{{tdobj.author}}</td>
+                                <td align="center">{{tdobj.createDate}}</td>
+                                <td align="center">{{tdobj.replyCount}}</td>
+                            </tr>
+                        </table>
+                 </div>
+            <div id="success"><input id="abc123" value=""></div>
+        </div>
+     </div>
+</body>
+<script th:src="@{/webjars/angularjs/1.4.6/angular.js}"></script>
+<script type="text/javascript" src="" th:src="@{/webjars/jquery/1.12.4/jquery.js}"></script>
+<script type="text/javascript">
+
+    /*
+     * angular.module（name,requires,configFn）
+     * 参数name是模块名称：
+     * 参数requires表示依赖模块数组。如果不设置requires参数，调用angular.module(name)方法表示获取这个模块；因此，如果确定新模块没有依赖关系，必须设置requires为空数组[]；
+     * 参数configFn是方法或数组，负责在模块初始化时做一些配置，如果是数组，最后一个元素必须是方法。
+     */
+    angular.module("myModle",[])
+        /*controller
+         * 1、通过$scope进行数据状态的初始化操作
+         * 2、通过$scope进行事件处理函数的挂载操作
+         * 3、$http：服务向服务器发送请求，应用响应服务器传过来的数据。
+         */
+        .controller("MyOption",function ($scope,$http) {
+            $scope.ComboBox=function(){
+                $http({
+                    //提交方式
+                    method:'get',
+                    //提交路径
+                    url:"/bbs/list",
+                    //then()第一个参数是请求成功的执行函数，第二个参数是请求失败的执行函数
+                }).then(function successCallback(response)
+                {
+                    $scope.dates=response.data;
+                },function errorCallback(response)
+                {
+                    alert(response.responseText)
+                })
+            }
+        })
+        .controller("MyTable",function($scope,$http){
+            $scope.ShowComponent = function(){
+                    var sortId = $("#sortId").val();
+                //查询条件
+                var param = {};
+                if(sortId != null){
+                    param = {"sortId":sortId};
+                }
+                $http({
+                    //提交方式
+                    method:'get',
+                    //提交路径
+                    url:"/bbs/show",
+                    /*
+                     * 请求信息数据的数据
+                     * params:字符串或者对象，会被转换成为查询字符串追加的url后面
+                     * data:在发送post请求时使用，作为消息体发送到服务器
+                     */
+                    params:param,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    //相当于相求成功
+                }).then(function successCallback(response)
+                    {
+
+                        $scope.dates=response.data;
+                    },function errorCallback(response)
+                    {
+                        alert(response.responseText)
+                    }
+                )
+            }
+        })
+
+    $("#ft").click(function(){
+        window.location.href="/bbs/add";
+    })
+
+</script>
+
+</html>

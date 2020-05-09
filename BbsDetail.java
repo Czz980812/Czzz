@@ -32,5 +32,6 @@ public class BbsDetail implements Serializable {
     private Date createDate;
     @Column(name = "replyCount")
     private Integer replyCount;
+    private Integer age;
 
 }

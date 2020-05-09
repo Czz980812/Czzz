@@ -33,5 +33,7 @@ public class BbsDetail implements Serializable {
     @Column(name = "replyCount")
     private Integer replyCount;
     private Integer age;
-
+public class BbsDetail(){
+     System.out.println("哈哈哈 ")
 }
+
